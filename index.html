@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paturi Libere — Spitalul Parhon Iași</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --text3: #484f58;
+    --blue: #58a6ff;
+    --blue-bg: rgba(88,166,255,0.1);
+    --green: #3fb950;
+    --green-bg: rgba(63,185,80,0.1);
+    --teal: #39d353;
+    --amber: #d29922;
+    --amber-bg: rgba(210,153,34,0.1);
+    --red: #f85149;
+    --red-bg: rgba(248,81,73,0.1);
+    --purple: #bc8cff;
+    --purple-bg: rgba(188,140,255,0.1);
+    --radius: 10px;
+    --radius-lg: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── LOGIN ── */
+  #loginScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  #loginScreen::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(88,166,255,0.06) 0%, transparent 70%);
+    top: -100px; left: -100px;
+    pointer-events: none;
+  }
+
+  #loginScreen::after {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(63,185,80,0.05) 0%, transparent 70%);
+    bottom: -50px; right: -50px;
+    pointer-events: none;
+  }
+
+  .login-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 380px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .login-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 2rem;
+  }
+
+  .login-logo-icon {
+    width: 36px; height: 36px;
+    background: var(--blue-bg);
+    border: 1px solid rgba(88,166,255,0.2);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .login-logo-icon svg { width: 18px; height: 18px; stroke: var(--blue); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .login-logo-text { font-size: 15px; font-weight: 600; color: var(--text); }
+  .login-logo-sub { font-size: 11px; color: var(--text2); }
+
+  .login-title { font-size: 20px; font-weight: 600; margin-bottom: 0.25rem; }
+  .login-subtitle { font-size: 13px; color: var(--text2); margin-bottom: 1.75rem; }
+
+  .field-label { font-size: 12px; color: var(--text2); margin-bottom: 6px; display: block; }
+
+  .field-group { margin-bottom: 1rem; }
+
+  input[type="password"], input[type="text"], input[type="url"] {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="password"]:focus, input[type="text"]:focus, input[type="url"]:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(88,166,255,0.1);
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 11px;
+    background: var(--blue);
+    color: #0d1117;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    margin-top: 0.5rem;
+  }
+
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-primary:active { transform: scale(0.98); }
+
+  .login-error {
+    background: var(--red-bg);
+    border: 1px solid rgba(248,81,73,0.2);
+    color: var(--red);
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    margin-bottom: 1rem;
+    display: none;
+  }
+
+  /* ── APP ── */
+  #app { display: none; }
+
+  .topbar {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+
+  .topbar-icon {
+    width: 28px; height: 28px;
+    background: var(--blue-bg);
+    border: 1px solid rgba(88,166,255,0.2);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .topbar-icon svg { width: 14px; height: 14px; stroke: var(--blue); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .topbar-title { font-size: 14px; font-weight: 600; }
+  .topbar-sub { font-size: 11px; color: var(--text2); }
+
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+
+  .btn-sm {
+    padding: 6px 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .btn-sm:hover { border-color: var(--border2); color: var(--text); background: var(--bg3); }
+  .btn-sm svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .main { padding: 1.5rem; max-width: 1100px; margin: 0 auto; }
+
+  /* stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    transition: border-color 0.2s;
+  }
+
+  .stat-card:hover { border-color: var(--border2); }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .stat-label svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+
+  .stat-value { font-size: 28px; font-weight: 600; font-family: 'DM Mono', monospace; }
+  .stat-value.blue { color: var(--blue); }
+  .stat-value.green { color: var(--green); }
+  .stat-value.amber { color: var(--amber); }
+
+  /* filters */
+  .filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-label { font-size: 12px; color: var(--text2); }
+
+  select {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  select:focus { border-color: var(--blue); }
+
+  .refresh-btn {
+    margin-left: auto;
+    padding: 7px 14px;
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: all 0.15s;
+  }
+
+  .refresh-btn:hover { color: var(--text); border-color: var(--blue); }
+  .refresh-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .refresh-btn.spinning svg { animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* table */
+  .table-container {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .table-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .table-header-title { font-size: 13px; font-weight: 500; }
+  .table-count { font-size: 11px; color: var(--text2); background: var(--bg3); padding: 2px 8px; border-radius: 20px; }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  thead th {
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+  tbody td { padding: 12px 16px; vertical-align: middle; }
+
+  .sectie-name {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 500; font-size: 13px;
+  }
+
+  .sectie-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  .ora-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    font-family: 'DM Mono', monospace;
+    background: var(--bg3);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+
+  .num-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .num-f { color: var(--blue); }
+  .num-b { color: var(--green); }
+  .num-text { font-size: 11px; color: var(--text3); font-style: italic; }
+
+  .empty-state {
+    padding: 3rem;
+    text-align: center;
+    color: var(--text2);
+    font-size: 13px;
+  }
+
+  /* loading/error */
+  .alert {
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .alert svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; flex-shrink: 0; }
+  .alert-error { background: var(--red-bg); border: 1px solid rgba(248,81,73,0.2); color: var(--red); }
+  .alert-info { background: var(--blue-bg); border: 1px solid rgba(88,166,255,0.2); color: var(--blue); }
+
+  .last-update {
+    font-size: 11px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* config modal */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+    width: 100%;
+    max-width: 480px;
+    margin: 1rem;
+  }
+
+  .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 0.25rem; }
+  .modal-sub { font-size: 12px; color: var(--text2); margin-bottom: 1.5rem; }
+  .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
+
+  .btn-cancel {
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .btn-save {
+    padding: 8px 18px;
+    background: var(--blue);
+    color: #0d1117;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .code-hint {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+    margin-top: 6px;
+    word-break: break-all;
+  }
+
+  /* auto-refresh indicator */
+  .ar-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    display: inline-block;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @media (max-width: 600px) {
+    .main { padding: 1rem; }
+    .topbar { padding: 0 1rem; }
+    table { font-size: 12px; }
+    tbody td { padding: 10px 12px; }
+    thead th { padding: 8px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div>
+        <div class="login-logo-text">Spitalul Parhon</div>
+        <div class="login-logo-sub">Iași</div>
+      </div>
+    </div>
+
+    <div class="login-title">Bun venit</div>
+    <div class="login-subtitle">Autentifică-te pentru a accesa rapoartele de paturi</div>
+
+    <div class="login-error" id="loginError">
+      <span>Parolă incorectă. Încearcă din nou.</span>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Parolă</label>
+      <input type="password" id="passwordInput" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+
+    <button class="btn-primary" onclick="doLogin()">Accesează dashboard-ul</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </div>
+      <div>
+        <div class="topbar-title">Paturi libere</div>
+        <div class="topbar-sub">Raportare zilnică · Spitalul Parhon Iași</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="ar-dot" title="Auto-reîmprospătare activă"></span>
+      <span class="last-update" id="lastUpdate">—</span>
+      <button class="btn-sm" onclick="openConfig()">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Configurare
+      </button>
+      <button class="btn-sm" onclick="doLogout()">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Ieșire
+      </button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div id="alertBox"></div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          Secții raportate
+        </div>
+        <div class="stat-value blue" id="statSectii">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Locuri femei (oxigen)
+        </div>
+        <div class="stat-value blue" id="statFemei">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Locuri bărbați (oxigen)
+        </div>
+        <div class="stat-value green" id="statBarbati">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Ultima tură
+        </div>
+        <div class="stat-value amber" id="statOra">—</div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <span class="filter-label">Dată:</span>
+      <select id="filterDate" onchange="render()"></select>
+      <span class="filter-label">Tură:</span>
+      <select id="filterOra" onchange="render()">
+        <option value="">Ambele ture</option>
+        <option value="07:30">07:30</option>
+        <option value="14:30">14:30</option>
+      </select>
+      <button class="refresh-btn" id="refreshBtn" onclick="loadData()">
+        <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+        Reîncarcă
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+      <div class="table-header">
+        <span class="table-header-title">Raport paturi</span>
+        <span class="table-count" id="tableCount">0 înregistrări</span>
+      </div>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Secție</th>
+              <th>Tură</th>
+              <th>Locuri femei (oxigen)</th>
+              <th>Locuri bărbați (oxigen)</th>
+              <th>Data</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIG MODAL -->
+<div class="modal-overlay" id="configModal">
+  <div class="modal">
+    <div class="modal-title">Configurare</div>
+    <div class="modal-sub">Setează URL-ul API și parola de acces</div>
+
+    <div class="field-group">
+      <label class="field-label">URL Apps Script (Web App)</label>
+      <input type="url" id="cfgUrl" placeholder="https://script.google.com/macros/s/.../exec" />
+      <div class="code-hint">Găsești URL-ul în Apps Script → Implementează → Gestionați implementările</div>
+    </div>
+
+    <div class="field-group" style="margin-top: 1rem;">
+      <label class="field-label">Parolă acces dashboard</label>
+      <input type="text" id="cfgPass" placeholder="ex: parhon2025" />
+    </div>
+
+    <div class="field-group" style="margin-top: 1rem;">
+      <label class="field-label">Auto-reîmprospătare (minute)</label>
+      <select id="cfgRefresh">
+        <option value="0">Dezactivat</option>
+        <option value="5">La 5 minute</option>
+        <option value="10" selected>La 10 minute</option>
+        <option value="30">La 30 minute</option>
+      </select>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeConfig()">Anulează</button>
+      <button class="btn-save" onclick="saveConfig()">Salvează</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIGURARE IMPLICITĂ ──
+// Schimbă parola și URL-ul după ce publici scriptul Apps Script
+const DEFAULT_CONFIG = {
+  password: 'parhon2025',
+  apiUrl: '',
+  refreshMin: 10
+};
+
+const SECTIE_COLORS = {
+  'ATI':             '#f85149',
+  'Nefrologie':      '#58a6ff',
+  'Urologie':        '#3fb950',
+  'Medicina Interna':'#d29922',
+  'Geriatrie':       '#bc8cff'
+};
+
+let cfg = {};
+let allData = [];
+let refreshTimer = null;
+
+function getConfig() {
+  const saved = localStorage.getItem('parhon_cfg');
+  cfg = saved ? JSON.parse(saved) : { ...DEFAULT_CONFIG };
+}
+
+function saveConfig() {
+  cfg.apiUrl = document.getElementById('cfgUrl').value.trim();
+  cfg.password = document.getElementById('cfgPass').value.trim() || cfg.password;
+  cfg.refreshMin = parseInt(document.getElementById('cfgRefresh').value);
+  localStorage.setItem('parhon_cfg', JSON.stringify(cfg));
+  closeConfig();
+  setupAutoRefresh();
+  loadData();
+}
+
+function openConfig() {
+  document.getElementById('cfgUrl').value = cfg.apiUrl || '';
+  document.getElementById('cfgPass').value = cfg.password || '';
+  document.getElementById('cfgRefresh').value = cfg.refreshMin || 10;
+  document.getElementById('configModal').classList.add('open');
+}
+
+function closeConfig() {
+  document.getElementById('configModal').classList.remove('open');
+}
+
+// ── AUTH ──
+function doLogin() {
+  const pass = document.getElementById('passwordInput').value;
+  getConfig();
+  if (pass === cfg.password || pass === DEFAULT_CONFIG.password) {
+    sessionStorage.setItem('parhon_auth', '1');
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadData();
+    setupAutoRefresh();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+    document.getElementById('passwordInput').value = '';
+  }
+}
+
+document.getElementById('passwordInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+function doLogout() {
+  sessionStorage.removeItem('parhon_auth');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('passwordInput').value = '';
+}
+
+// ── DATA ──
+function showAlert(msg, type) {
+  document.getElementById('alertBox').innerHTML =
+    `<div class="alert alert-${type}">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      ${msg}
+    </div>`;
+}
+
+function clearAlert() { document.getElementById('alertBox').innerHTML = ''; }
+
+async function loadData() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+
+  if (!cfg.apiUrl) {
+    showAlert('Configurează URL-ul scriptului Apps Script din butonul "Configurare".', 'error');
+    btn.classList.remove('spinning');
+    return;
+  }
+
+  try {
+    const res = await fetch(cfg.apiUrl + '?t=' + Date.now());
+    const json = await res.json();
+    allData = json.data || json;
+    clearAlert();
+    populateDates();
+    render();
+    document.getElementById('lastUpdate').textContent =
+      new Date().toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
+  } catch(e) {
+    showAlert('Eroare la încărcarea datelor. Verifică URL-ul și permisiunile scriptului.', 'error');
+  }
+
+  btn.classList.remove('spinning');
+}
+
+function populateDates() {
+  const dates = [...new Set(allData.map(r => r.data))].sort().reverse();
+  const sel = document.getElementById('filterDate');
+  const current = sel.value;
+  sel.innerHTML = dates.map(d => `<option value="${d}"${d===current?' selected':''}>${d}</option>`).join('');
+}
+
+function render() {
+  const date = document.getElementById('filterDate').value;
+  const ora = document.getElementById('filterOra').value;
+
+  let rows = allData.filter(r => r.data === date);
+  if (ora) rows = rows.filter(r => r.ora === ora);
+
+  // stats
+  const sectii = new Set(rows.map(r => r.sectie)).size;
+  const femeiNums = rows.map(r => parseInt(r.femei)).filter(n => !isNaN(n));
+  const barbatiNums = rows.map(r => parseInt(r.barbati)).filter(n => !isNaN(n));
+  const oreUnique = [...new Set(rows.map(r => r.ora))];
+
+  document.getElementById('statSectii').textContent = sectii || '—';
+  document.getElementById('statFemei').textContent = femeiNums.length ? femeiNums.reduce((a,b)=>a+b,0) : '—';
+  document.getElementById('statBarbati').textContent = barbatiNums.length ? barbatiNums.reduce((a,b)=>a+b,0) : '—';
+  document.getElementById('statOra').textContent = oreUnique.length === 1 ? oreUnique[0] : oreUnique.join(' / ') || '—';
+  document.getElementById('tableCount').textContent = rows.length + ' înregistrări';
+
+  const tbody = document.getElementById('tbody');
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">Nu există date pentru selecția curentă.</div></td></tr>`;
+    return;
+  }
+
+  // sort: sectie then ora
+  rows.sort((a,b) => a.sectie.localeCompare(b.sectie) || a.ora.localeCompare(b.ora));
+
+  tbody.innerHTML = rows.map(r => {
+    const color = SECTIE_COLORS[r.sectie] || '#8b949e';
+    const fNum = parseInt(r.femei);
+    const bNum = parseInt(r.barbati);
+    const femeiCell = !isNaN(fNum)
+      ? `<span class="num-val num-f">${fNum}</span>`
+      : `<span class="num-text">${r.femei || '—'}</span>`;
+    const barbatiCell = !isNaN(bNum)
+      ? `<span class="num-val num-b">${bNum}</span>`
+      : `<span class="num-text">${r.barbati || '—'}</span>`;
+
+    return `<tr>
+      <td><span class="sectie-name"><span class="sectie-dot" style="background:${color}"></span>${r.sectie}</span></td>
+      <td><span class="ora-badge">${r.ora}</span></td>
+      <td>${femeiCell}</td>
+      <td>${barbatiCell}</td>
+      <td style="font-size:12px; color:var(--text2); font-family:'DM Mono',monospace;">${r.data}</td>
+    </tr>`;
+  }).join('');
+}
+
+function setupAutoRefresh() {
+  if (refreshTimer) clearInterval(refreshTimer);
+  if (cfg.refreshMin > 0) {
+    refreshTimer = setInterval(loadData, cfg.refreshMin * 60 * 1000);
+  }
+}
+
+// ── INIT ──
+getConfig();
+if (sessionStorage.getItem('parhon_auth') === '1') {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadData();
+  setupAutoRefresh();
+}
+</script>
+</body>
+</html>
