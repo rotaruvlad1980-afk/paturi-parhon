@@ -424,10 +424,20 @@ function populateDates() {
 function formatDataRO(data) {
   if (!data) return '—';
   const luni = ['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
+  const luni_en = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  
+  // Format dd/MM/yyyy
   const parts = data.split('/');
   if (parts.length === 3) {
     return `${parseInt(parts[0])} ${luni[parseInt(parts[1])-1]} ${parts[2]}`;
   }
+  
+  // Format "Thu May 28" sau "May 28, 2025"
+  const d = new Date(data);
+  if (!isNaN(d.getTime())) {
+    return `${d.getDate()} ${luni[d.getMonth()]} ${d.getFullYear()}`;
+  }
+  
   return data;
 }
   
