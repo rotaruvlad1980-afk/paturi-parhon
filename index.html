@@ -423,17 +423,23 @@ function populateDates() {
   }).join('');
 }
 
-function formatDataRO(data) {
+function formatDataRO(data, timestamp) {
   if (!data) return '—';
   const luni = ['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
+  
+  // Format dd/MM/yyyy
   const parts = data.split('/');
   if (parts.length === 3) {
     return `${parseInt(parts[0])} ${luni[parseInt(parts[1])-1]} ${parts[2]}`;
   }
-  const d = new Date(data);
+  
+  // Format "Thu May 28" — luam anul din timestamp
+  const an = timestamp ? new Date(timestamp).getFullYear() : new Date().getFullYear();
+  const d = new Date(data + ' ' + an);
   if (!isNaN(d.getTime())) {
-    return `${d.getDate()} ${luni[d.getMonth()]} ${d.getFullYear()}`;
+    return `${d.getDate()} ${luni[d.getMonth()]} ${an}`;
   }
+  
   return data;
 }
   
