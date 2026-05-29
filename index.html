@@ -423,25 +423,16 @@ function populateDates() {
   }).join('');
 }
 
-function formatDataRO(data, timestamp) {
+function formatDataRO(data) {
   if (!data) return '—';
   const luni = ['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
-  
-  // Format dd/MM/yyyy
   const parts = data.split('/');
   if (parts.length === 3) {
-    return `${parseInt(parts[0])} ${luni[parseInt(parts[1])-1]} ${parts[2]}`;
+    const zi = parseInt(parts[0]);
+    const luna = parseInt(parts[1]) - 1;
+    const an = parseInt(parts[2]);
+    return zi + ' ' + luni[luna] + ' ' + an;
   }
-  
-  // Extragem anul direct din timestamp cu regex
-  const anMatch = timestamp ? timestamp.match(/\d{4}/) : null;
-  const an = anMatch ? anMatch[0] : new Date().getFullYear();
-  
-  const d = new Date(data + ' ' + an);
-  if (!isNaN(d.getTime())) {
-    return `${d.getDate()} ${luni[d.getMonth()]} ${an}`;
-  }
-  
   return data;
 }
   
