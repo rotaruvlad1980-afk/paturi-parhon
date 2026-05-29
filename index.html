@@ -410,7 +410,9 @@ async function loadData() {
 
 function populateDates() {
   const dates = [...new Set(allData.map(r => r.data))].sort((a,b) => {
-    const da = new Date(a), db = new Date(b);
+    const pa = a.split('/'), pb = b.split('/');
+    const da = new Date(pa[2], pa[1]-1, pa[0]);
+    const db = new Date(pb[2], pb[1]-1, pb[0]);
     return db - da;
   });
   const sel = document.getElementById('filterDate');
@@ -425,17 +427,13 @@ function formatDataRO(data) {
   if (!data) return '—';
   const luni = ['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
   
-  // Format dd/MM/yyyy
+  // Format dd/MM/yyyy — singurul format trimis de Apps Script
   const parts = data.split('/');
   if (parts.length === 3) {
-    return `${parseInt(parts[0])} ${luni[parseInt(parts[1])-1]} ${parts[2]}`;
-  }
-  
-  // Format "Thu May 28" fara an — adaugam anul curent
-  const azi = new Date();
-  const d = new Date(data + ' ' + azi.getFullYear());
-  if (!isNaN(d.getTime())) {
-    return `${d.getDate()} ${luni[d.getMonth()]} ${d.getFullYear()}`;
+    const zi = parseInt(parts[0]);
+    const luna = parseInt(parts[1]) - 1;
+    const an = parseInt(parts[2]);
+    return `${zi} ${luni[luna]} ${an}`;
   }
   
   return data;
