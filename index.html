@@ -426,16 +426,14 @@ function populateDates() {
 function formatDataRO(data) {
   if (!data) return '—';
   const luni = ['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
-  
-  // Format dd/MM/yyyy — singurul format trimis de Apps Script
   const parts = data.split('/');
   if (parts.length === 3) {
-    const zi = parseInt(parts[0]);
-    const luna = parseInt(parts[1]) - 1;
-    const an = parseInt(parts[2]);
-    return `${zi} ${luni[luna]} ${an}`;
+    return `${parseInt(parts[0])} ${luni[parseInt(parts[1])-1]} ${parts[2]}`;
   }
-  
+  const d = new Date(data);
+  if (!isNaN(d.getTime())) {
+    return `${d.getDate()} ${luni[d.getMonth()]} ${d.getFullYear()}`;
+  }
   return data;
 }
   
