@@ -410,15 +410,15 @@ async function loadData() {
 
 function populateDates() {
   const dates = [...new Set(allData.map(r => r.data))].sort((a,b) => {
-    // sort dd/MM/yyyy descending
-    const pa = a.split('/'), pb = b.split('/');
-    const da = new Date(pa[2], pa[1]-1, pa[0]);
-    const db = new Date(pb[2], pb[1]-1, pb[0]);
+    const da = new Date(a), db = new Date(b);
     return db - da;
   });
   const sel = document.getElementById('filterDate');
   const current = sel.value;
-  sel.innerHTML = dates.map(d => `<option value="${d}"${d===current?' selected':''}>${d}</option>`).join('');
+  sel.innerHTML = dates.map(d => {
+    const label = formatDataRO(d);
+    return `<option value="${d}"${d===current?' selected':''}>${label}</option>`;
+  }).join('');
 }
 
 function formatDataRO(data) {
