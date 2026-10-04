@@ -151,7 +151,7 @@
   /* DESKTOP */
   @media (min-width: 700px) {
     .main { padding: 1.5rem; max-width: 1100px; margin: 0 auto; }
-    .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); max-width: 420px; gap: 12px; margin-bottom: 1.5rem; }
     .stat-value { font-size: 28px; }
     .filters { gap: 10px; margin-bottom: 1.25rem; }
     select { flex: none; padding: 7px 12px; }
@@ -241,20 +241,12 @@
 
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-label">Secții</div>
+        <div class="stat-label">Secții raportate</div>
         <div class="stat-value blue" id="statSectii">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Tură</div>
         <div class="stat-value amber" id="statOra">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Locuri femei</div>
-        <div class="stat-value blue" id="statFemei">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Locuri bărbați</div>
-        <div class="stat-value green" id="statBarbati">—</div>
       </div>
     </div>
 
@@ -472,15 +464,11 @@ function getFilteredRows() {
 
 function render() {
   const rows = getFilteredRows();
-  const sectii = new Set(rows.map(r => r.sectie)).size;
-  const femeiNums = rows.map(r => parseInt(r.femei)).filter(n => !isNaN(n));
-  const barbatiNums = rows.map(r => parseInt(r.barbati)).filter(n => !isNaN(n));
+  const sectiiRaportate = new Set(rows.map(r => r.sectie)).size;
   const oreUnique = [...new Set(rows.map(r => r.ora))];
 
-  document.getElementById('statSectii').textContent = sectii || '—';
-  document.getElementById('statFemei').textContent = femeiNums.length ? femeiNums.reduce((a,b)=>a+b,0) : '—';
-  document.getElementById('statBarbati').textContent = barbatiNums.length ? barbatiNums.reduce((a,b)=>a+b,0) : '—';
-  document.getElementById('statOra').textContent = oreUnique.length===1 ? oreUnique[0] : oreUnique.join('/') || '—';
+  document.getElementById('statSectii').textContent = rows.length ? (sectiiRaportate + '/' + SECTII.length) : '—';
+  document.getElementById('statOra').textContent = oreUnique.length===1 ? oreUnique[0] : (oreUnique.length ? oreUnique.join('/') : '—');
   document.getElementById('tableCount').textContent = rows.length + ' înregistrări';
 
   if (!rows.length) {
