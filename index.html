@@ -345,6 +345,8 @@
 </div>
 
 <script>
+// URL-ul Apps Script (/exec). Se schimbă DOAR aici: toate calculatoarele îl preiau automat.
+const API_URL = 'https://script.google.com/macros/s/AKfycbxULcb7ajD7eR7CLOs9-ROkUEwrMlQfKwbv6zzD0zp6mBUj3A6iu8rLnxX1KMWmLKfKWg/exec';
 const DEFAULT_CONFIG = { password: 'parhon2025', apiUrl: '', refreshMin: 10 };
 const SECTII = ['ATI','Nefrologie','Urologie','Medicina Interna','Geriatrie'];
 const SECTIE_COLORS = { 'ATI':'#f85149','Nefrologie':'#58a6ff','Urologie':'#3fb950','Medicina Interna':'#d29922','Geriatrie':'#bc8cff' };
@@ -356,11 +358,12 @@ let refreshTimer = null;
 
 function getConfig() {
   const saved = localStorage.getItem('parhon_cfg');
-  cfg = saved ? JSON.parse(saved) : { ...DEFAULT_CONFIG };
+  cfg = saved ? { ...DEFAULT_CONFIG, ...JSON.parse(saved) } : { ...DEFAULT_CONFIG };
+  if (API_URL) cfg.apiUrl = API_URL; // URL-ul central are prioritate față de cel salvat în browser
 }
 
 function saveConfig() {
-  cfg.apiUrl = document.getElementById('cfgUrl').value.trim();
+  if (!API_URL) cfg.apiUrl = document.getElementById('cfgUrl').value.trim();
   const p = document.getElementById('cfgPass').value.trim();
   if (p) cfg.password = p;
   cfg.refreshMin = parseInt(document.getElementById('cfgRefresh').value);
@@ -372,6 +375,7 @@ function saveConfig() {
 
 function openConfig() {
   document.getElementById('cfgUrl').value = cfg.apiUrl || '';
+  document.getElementById('cfgUrl').disabled = !!API_URL;
   document.getElementById('cfgPass').value = cfg.password || '';
   document.getElementById('cfgRefresh').value = cfg.refreshMin || 10;
   document.getElementById('configModal').classList.add('open');
@@ -549,6 +553,20 @@ function setupAutoRefresh() {
   if (refreshTimer) clearInterval(refreshTimer);
   if (cfg.refreshMin > 0) refreshTimer = setInterval(loadData, cfg.refreshMin * 60 * 1000);
 }
+
+// Verifică periodic dacă pe server există o versiune nouă a paginii și o reîncarcă singură.
+let pageSource = null;
+async function checkForUpdate() {
+  try {
+    const res = await fetch(location.pathname + '?v=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) return;
+    const txt = await res.text();
+    if (pageSource === null) pageSource = txt;
+    else if (txt !== pageSource) location.replace(location.pathname + '?v=' + Date.now());
+  } catch (e) {}
+}
+checkForUpdate();
+setInterval(checkForUpdate, 5 * 60 * 1000);
 
 getConfig();
 if (sessionStorage.getItem('parhon_auth') === '1') {
